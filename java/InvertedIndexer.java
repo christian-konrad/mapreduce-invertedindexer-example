@@ -51,6 +51,11 @@ public class InvertedIndexer {
                        ) throws IOException, InterruptedException {
 
       List<String> docNameList = new ArrayList<String>();
+
+      for (Text docName : docNames) {
+        String docNameStr = docName.toString();
+        docNameList.add(docNameStr);
+      }
     	
       result.set(String.join(" ", docNameList));
       context.write(term, result);
@@ -89,7 +94,7 @@ public class InvertedIndexer {
     Job job = Job.getInstance(conf, "inverted indexer");
     job.setJarByClass(InvertedIndexer.class);
     job.setMapperClass(TokenizerMapper.class);
-    //job.setCombinerClass(PostingsListReducer.class);
+    job.setCombinerClass(TermsDocIdCombiner.class);
     job.setReducerClass(PostingsListReducer.class);
     job.setOutputKeyClass(Text.class);
     job.setOutputValueClass(Text.class);
